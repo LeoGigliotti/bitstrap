@@ -14,7 +14,7 @@ namespace BitStrap
 
 		private const float POSITION_MAX = 100000.0f;
 
-		private const float BUTTON_WIDTH = 12.0f;
+		private const float BUTTON_WIDTH = 35.0f;
 
 		private static GUIContent positionGUIContent = new GUIContent( LocalString( "Position" ),
 			LocalString( "The local position of this Game Object relative to the parent." ) );
@@ -32,6 +32,7 @@ namespace BitStrap
 		private SerializedProperty scaleProperty;
 		private GUILayoutOption[] noOptions = new GUILayoutOption[0];
 		private GUILayoutOption[] buttonWidthOption = new []{GUILayout.Width(BUTTON_WIDTH) };
+		private GUIStyle style;
 
         private static string LocalString(string text)
         {
@@ -50,11 +51,18 @@ namespace BitStrap
 		private bool EndPropertyWithReset()
 		{
 			var rect = GUILayoutUtility.GetRect( BUTTON_WIDTH, EditorGUIUtility.singleLineHeight, buttonWidthOption );
-			rect.x -= 2.0f;
-			rect.y += 2.0f;
+			rect.Left(rect.width * 0.5f, out var leftRect).Expand(out var rightRect);
 
 			bool reset = false;
-			if( GUI.Button( rect, GUIContent.none, EditorHelper.Styles.Minus ) )
+			if( GUI.Button( leftRect, GUIContent.none, EditorHelper.Styles.Minus ) )
+			{
+				GUI.FocusControl( "" );
+				reset = true;
+			}
+
+			GUI.skin.button = style;
+			
+			if( GUI.Button( rightRect, EditorGUIUtility.IconContent("d_InspectorLock") ) )
 			{
 				GUI.FocusControl( "" );
 				reset = true;
