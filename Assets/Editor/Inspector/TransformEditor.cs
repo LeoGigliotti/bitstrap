@@ -48,10 +48,16 @@ namespace BitStrap
 			EditorGUILayout.BeginHorizontal( noOptions );
 		}
 
-		private bool EndPropertyWithReset()
+		private (Rect leftRect, Rect rightRect) CreateButtonsRect()
 		{
 			var rect = GUILayoutUtility.GetRect( BUTTON_WIDTH, EditorGUIUtility.singleLineHeight, buttonWidthOption );
 			rect.Left(rect.width * 0.5f, out var leftRect).Expand(out var rightRect);
+
+			return (leftRect, rightRect);
+		}
+
+		private bool ResetButton(Rect leftRect)
+		{
 
 			bool reset = false;
 			if( GUI.Button( leftRect, GUIContent.none, EditorHelper.Styles.Minus ) )
@@ -59,18 +65,21 @@ namespace BitStrap
 				GUI.FocusControl( "" );
 				reset = true;
 			}
-
-			GUI.skin.button = style;
 			
+			return reset;
+		}
+
+		private bool LockButton(Rect rightRect)
+		{
+			bool reset = false;
 			if( GUI.Button( rightRect, EditorGUIUtility.IconContent("d_InspectorLock") ) )
 			{
 				GUI.FocusControl( "" );
 				reset = true;
 			}
-
-			EditorGUILayout.EndHorizontal();
-
+			
 			return reset;
+
 		}
 
 		public override void OnInspectorGUI()
@@ -84,20 +93,39 @@ namespace BitStrap
 
 			BeginPropertyWithReset();
 			EditorGUILayout.PropertyField( positionProperty, positionGUIContent, noOptions);
-			if( EndPropertyWithReset() )
+			var rectPosition = CreateButtonsRect();
+			
+			if( ResetButton(rectPosition.Item1) )
 				positionProperty.vector3Value = Vector3.zero;
+			if( LockButton(rectPosition.Item2) )
+				positionProperty.vector3Value = Vector3.zero;
+			
+			EditorGUILayout.EndHorizontal();
 			GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+			
 
 			BeginPropertyWithReset();
 			RotationPropertyField( rotationGUIContent );
-			if( EndPropertyWithReset() )
+			var rectRotation = CreateButtonsRect();
+			
+			if( ResetButton(rectRotation.Item1) )
 				rotationProperty.quaternionValue = Quaternion.identity;
+			if( LockButton(rectRotation.Item2) )
+				positionProperty.vector3Value = Vector3.zero;
+			
+			EditorGUILayout.EndHorizontal();
 			GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
 
 			BeginPropertyWithReset();
 			EditorGUILayout.PropertyField( scaleProperty, scaleGUIContent, noOptions);
-			if( EndPropertyWithReset() )
+			var rectScale = CreateButtonsRect();
+			
+			if( ResetButton(rectScale.Item1) )
 				scaleProperty.vector3Value = Vector3.one;
+			if( LockButton(rectScale.Item2) )
+				positionProperty.vector3Value = Vector3.zero;
+			
+			EditorGUILayout.EndHorizontal();
 			GUILayout.Space(3f * EditorGUIUtility.standardVerticalSpacing);
 
 			if ( !ValidatePosition( ( ( Transform ) target ).position ) )
