@@ -1,7 +1,5 @@
-# BitStrap
-
-## Repository
+## Forked from original repository:
 https://github.com/bitcake/bitstrap/
 
-## Wiki and Documentation
+## Original wiki and Documentation
 https://github.com/bitcake/bitstrap/wiki
